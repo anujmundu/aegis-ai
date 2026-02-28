@@ -1,0 +1,31 @@
+# Version control
+.git/
+.gitignore
+
+# Virtual environments & local caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# Local run artifacts & experiments
+mlruns/
+mlartifacts/
+mlflow.db
+experiments/
+*.log
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

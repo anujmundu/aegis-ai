@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aegis-ai"
+version = "0.1.0"
+description = "AegisAI: Production AI Incident Intelligence & Autonomous Reliability Platform"
+authors = [{ name = "Anuj Mundu", email = "143332126+anujmundu@users.noreply.github.com" }]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = ["E501", "B008"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q --durations=10"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"

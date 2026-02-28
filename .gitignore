@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables & secrets
+.env
+*.env.local
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.benchmarks/
+.ruff_cache/
+.mypy_cache/
+
+# Data & Large Artifacts
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/real_world/raw/
+data/real_world/processed/
+data/cloud_storage/
+*.parquet
+*.h5
+
+# Model weights & Checkpoints (except lightweight champion baselines)
+models/checkpoints/
+mlruns/
+mlartifacts/
+mlflow.db
+experiments/
+
+# OS / Editor specific
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Documentation & Internal Design Specs (Untracked)
+docs/
+docs
