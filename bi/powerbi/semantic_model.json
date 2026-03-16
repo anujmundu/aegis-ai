@@ -1,0 +1,95 @@
+{
+  "name": "AegisAI_Executive_Reliability_Model",
+  "compatibilityLevel": 1550,
+  "description": "AegisAI Executive Incident Reliability & Financial Impact Semantic Model for Power BI and Microsoft Fabric.",
+  "model": {
+    "culture": "en-US",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "tables": [
+      {
+        "name": "fact_incident_financials",
+        "description": "Core fact table capturing reliability, MTTR duration, downtime financial impact, and labor reclamation per incident.",
+        "columns": [
+          {"name": "incident_id", "dataType": "string", "isKey": true},
+          {"name": "date_key", "dataType": "int64"},
+          {"name": "timestamp", "dataType": "dateTime"},
+          {"name": "service_id", "dataType": "string"},
+          {"name": "service_tier", "dataType": "string"},
+          {"name": "severity", "dataType": "string"},
+          {"name": "archetype", "dataType": "string"},
+          {"name": "baseline_mttr_minutes", "dataType": "double", "formatString": "#,##0.0"},
+          {"name": "actual_mttr_minutes", "dataType": "double", "formatString": "#,##0.0"},
+          {"name": "mttr_reduction_minutes", "dataType": "double", "formatString": "#,##0.0"},
+          {"name": "hourly_downtime_rate", "dataType": "double", "formatString": "$#,##0.00"},
+          {"name": "baseline_downtime_cost", "dataType": "double", "formatString": "$#,##0.00"},
+          {"name": "actual_downtime_cost", "dataType": "double", "formatString": "$#,##0.00"},
+          {"name": "downtime_savings_gross", "dataType": "double", "formatString": "$#,##0.00"},
+          {"name": "engineering_hours_saved", "dataType": "double", "formatString": "#,##0.0"},
+          {"name": "engineering_cost_saved", "dataType": "double", "formatString": "$#,##0.00"},
+          {"name": "total_gross_value_delivered", "dataType": "double", "formatString": "$#,##0.00"},
+          {"name": "realized_net_savings", "dataType": "double", "formatString": "$#,##0.00"},
+          {"name": "is_false_positive", "dataType": "boolean"},
+          {"name": "status", "dataType": "string"},
+          {"name": "grounding_score", "dataType": "double", "formatString": "0.0%"}
+        ]
+      },
+      {
+        "name": "dim_service",
+        "description": "Microservice dimension table containing tier hierarchy, criticality, and ownership.",
+        "columns": [
+          {"name": "service_id", "dataType": "string", "isKey": true},
+          {"name": "service_name", "dataType": "string"},
+          {"name": "tier", "dataType": "string"},
+          {"name": "criticality", "dataType": "string"},
+          {"name": "owner_team", "dataType": "string"}
+        ]
+      },
+      {
+        "name": "dim_severity",
+        "description": "Severity tier lookup table with downtime cost per hour and target SLA bounds.",
+        "columns": [
+          {"name": "severity_code", "dataType": "string", "isKey": true},
+          {"name": "severity_name", "dataType": "string"},
+          {"name": "hourly_cost_rate_usd", "dataType": "double", "formatString": "$#,##0.00"},
+          {"name": "target_sla_minutes", "dataType": "int64"}
+        ]
+      },
+      {
+        "name": "dim_archetype",
+        "description": "Incident failure archetype classification taxonomy.",
+        "columns": [
+          {"name": "archetype_id", "dataType": "string", "isKey": true},
+          {"name": "archetype_name", "dataType": "string"},
+          {"name": "primary_tier", "dataType": "string"},
+          {"name": "description", "dataType": "string"}
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "fact_to_dim_service",
+        "fromTable": "fact_incident_financials",
+        "fromColumn": "service_id",
+        "toTable": "dim_service",
+        "toColumn": "service_id"
+      },
+      {
+        "name": "fact_to_dim_severity",
+        "fromTable": "fact_incident_financials",
+        "fromColumn": "severity",
+        "toTable": "dim_severity",
+        "toColumn": "severity_code"
+      },
+      {
+        "name": "fact_to_dim_archetype",
+        "fromTable": "fact_incident_financials",
+        "fromColumn": "archetype",
+        "toTable": "dim_archetype",
+        "toColumn": "archetype_id"
+      }
+    ]
+  }
+}

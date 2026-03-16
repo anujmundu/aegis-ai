@@ -1,0 +1,120 @@
+// =============================================================================
+// AegisAI: Executive Dashboard DAX Measure Definitions
+// Compatible with: Power BI Desktop, Microsoft Fabric, Analysis Services
+// Target Fact Table: fact_incident_financials
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// 1. Core Incident & Reliability Measures
+// -----------------------------------------------------------------------------
+
+[Total Incidents] = 
+COUNTROWS('fact_incident_financials')
+
+[Resolved Incidents] = 
+CALCULATE(
+    COUNTROWS('fact_incident_financials'),
+    'fact_incident_financials'[status] = "RESOLVED" &&
+    'fact_incident_financials'[is_false_positive] = FALSE()
+)
+
+[False Positive Alarms] = 
+CALCULATE(
+    COUNTROWS('fact_incident_financials'),
+    'fact_incident_financials'[is_false_positive] = TRUE()
+)
+
+[False Positive Rate %] = 
+DIVIDE([False Positive Alarms], [Total Incidents], 0) * 100
+
+[Critical P1 Incidents] = 
+CALCULATE(
+    COUNTROWS('fact_incident_financials'),
+    'fact_incident_financials'[severity] = "CRITICAL"
+)
+
+// -----------------------------------------------------------------------------
+// 2. Mean Time to Remediate (MTTR) Measures
+// -----------------------------------------------------------------------------
+
+[Baseline Avg MTTR (Minutes)] = 
+CALCULATE(
+    AVERAGE('fact_incident_financials'[baseline_mttr_minutes]),
+    'fact_incident_financials'[is_false_positive] = FALSE()
+)
+
+[AegisAI Avg MTTR (Minutes)] = 
+CALCULATE(
+    AVERAGE('fact_incident_financials'[actual_mttr_minutes]),
+    'fact_incident_financials'[is_false_positive] = FALSE()
+)
+
+[MTTR Reduction (Minutes)] = 
+[Baseline Avg MTTR (Minutes)] - [AegisAI Avg MTTR (Minutes)]
+
+[MTTR Reduction %] = 
+DIVIDE([MTTR Reduction (Minutes)], [Baseline Avg MTTR (Minutes)], 0) * 100
+
+// -----------------------------------------------------------------------------
+// 3. Financial Exposure Avoided & Savings
+// -----------------------------------------------------------------------------
+
+[Baseline Downtime Exposure ($)] = 
+SUM('fact_incident_financials'[baseline_downtime_cost])
+
+[Actual Incurred Downtime Cost ($)] = 
+SUM('fact_incident_financials'[actual_downtime_cost])
+
+[Total Downtime Exposure Avoided ($)] = 
+SUM('fact_incident_financials'[downtime_savings_gross])
+
+[Engineering Hours Reclaimed] = 
+SUM('fact_incident_financials'[engineering_hours_saved])
+
+[Engineering Cost Saved ($)] = 
+SUM('fact_incident_financials'[engineering_cost_saved])
+
+[Total Gross Value Delivered ($)] = 
+SUM('fact_incident_financials'[total_gross_value_delivered])
+
+[Realized Net Savings (25% Model) ($)] = 
+SUM('fact_incident_financials'[realized_net_savings])
+
+// -----------------------------------------------------------------------------
+// 4. Return on Investment (ROI) & Payback Period
+// -----------------------------------------------------------------------------
+
+[Annual Platform Investment ($)] = 
+15000.0
+
+[Net Enterprise ROI %] = 
+DIVIDE(
+    [Realized Net Savings (25% Model) ($)] - [Annual Platform Investment ($)],
+    [Annual Platform Investment ($)],
+    0
+) * 100
+
+[Daily Realized Value ($)] = 
+DIVIDE([Realized Net Savings (25% Model) ($)], 365, 0)
+
+[Capital Payback Period (Days)] = 
+DIVIDE([Annual Platform Investment ($)], [Daily Realized Value ($)], 0)
+
+// -----------------------------------------------------------------------------
+// 5. Dynamic Card & Title Formatting Measures
+// -----------------------------------------------------------------------------
+
+[MTTR Card Subtitle] = 
+"Reduced from " & 
+FORMAT([Baseline Avg MTTR (Minutes)], "0.0") & 
+" mins to " & 
+FORMAT([AegisAI Avg MTTR (Minutes)], "0.0") & 
+" mins (" & 
+FORMAT([MTTR Reduction %], "0.0%") & " drop)"
+
+[ROI Card Subtitle] = 
+"Payback achieved in " & 
+FORMAT([Capital Payback Period (Days)], "0.0") & 
+" days on $" & 
+FORMAT([Annual Platform Investment ($)], "#,##0") & 
+" baseline cost"
