@@ -1,0 +1,8 @@
+archetype_id,archetype_name,primary_tier,description
+db_connection_pool_leak,Database Connection Pool Starvation,database,Exhaustion of backend pool connections causing request stalls
+memory_leak_oom,Memory Leak & Container OOMKilled,infrastructure,Unbounded RAM consumption leading to SIGKILL restart cascades
+payment_gateway_latency_spike,Third-Party Payment Latency Surge,application,Upstream timeout propagation locking worker threads
+cpu_saturation,CPU Core Saturation & Throttling,infrastructure,CFS quota throttling and task scheduler queuing delays
+disk_io_throttling,EBS/Disk IOPS Burst Depletion,infrastructure,Disk queue depth buildup and IO latency spikes
+network_partition,Service Mesh Network Partition,application,Inter-pod TCP reset waves and transient DNS timeouts
+unclassified_anomaly,Unclassified Anomaly / Noise,application,Non-structural metric fluctuation or nominal drift

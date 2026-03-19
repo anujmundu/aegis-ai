@@ -1,0 +1,6 @@
+service_id,service_name,tier,criticality,owner_team
+checkout-service,Checkout & Payment Microservice,application,CRITICAL,checkout-eng
+order-processing,Order Ingestion & State Machine,application,CRITICAL,order-eng
+aurora-postgres-primary,Primary PostgreSQL Aurora Cluster,database,CRITICAL,database-sre
+redis-session-store,Distributed Redis Session Store,database,HIGH,platform-sre
+kubernetes-cluster-core,Production Kubernetes Node Pool,infrastructure,CRITICAL,infra-sre
