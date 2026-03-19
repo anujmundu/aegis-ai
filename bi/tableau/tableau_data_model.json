@@ -1,0 +1,52 @@
+{
+  "datasource": {
+    "name": "AegisAI_Incident_Financial_Analytics",
+    "version": "1.0",
+    "connection": {
+      "class": "textscan",
+      "directory": "data/analytics_export",
+      "filename": "fact_incident_financials.csv"
+    },
+    "relations": [
+      {
+        "type": "join",
+        "join_type": "left",
+        "left_table": "fact_incident_financials.csv",
+        "right_table": "dim_service.csv",
+        "condition": "fact_incident_financials.service_id = dim_service.service_id"
+      },
+      {
+        "type": "join",
+        "join_type": "left",
+        "left_table": "fact_incident_financials.csv",
+        "right_table": "dim_severity.csv",
+        "condition": "fact_incident_financials.severity = dim_severity.severity_code"
+      },
+      {
+        "type": "join",
+        "join_type": "left",
+        "left_table": "fact_incident_financials.csv",
+        "right_table": "dim_archetype.csv",
+        "condition": "fact_incident_financials.archetype = dim_archetype.archetype_id"
+      }
+    ],
+    "fields": [
+      {"name": "Incident Id", "source": "incident_id", "dataType": "string", "role": "dimension"},
+      {"name": "Timestamp", "source": "timestamp", "dataType": "datetime", "role": "dimension"},
+      {"name": "Service Id", "source": "service_id", "dataType": "string", "role": "dimension"},
+      {"name": "Severity", "source": "severity", "dataType": "string", "role": "dimension"},
+      {"name": "Archetype", "source": "archetype", "dataType": "string", "role": "dimension"},
+      {"name": "Baseline Mttr Minutes", "source": "baseline_mttr_minutes", "dataType": "real", "role": "measure"},
+      {"name": "Actual Mttr Minutes", "source": "actual_mttr_minutes", "dataType": "real", "role": "measure"},
+      {"name": "Mttr Reduction Minutes", "source": "mttr_reduction_minutes", "dataType": "real", "role": "measure"},
+      {"name": "Hourly Downtime Rate", "source": "hourly_downtime_rate", "dataType": "real", "role": "measure"},
+      {"name": "Downtime Savings Gross", "source": "downtime_savings_gross", "dataType": "real", "role": "measure"},
+      {"name": "Engineering Hours Saved", "source": "engineering_hours_saved", "dataType": "real", "role": "measure"},
+      {"name": "Engineering Cost Saved", "source": "engineering_cost_saved", "dataType": "real", "role": "measure"},
+      {"name": "Total Gross Value Delivered", "source": "total_gross_value_delivered", "dataType": "real", "role": "measure"},
+      {"name": "Realized Net Savings", "source": "realized_net_savings", "dataType": "real", "role": "measure"},
+      {"name": "Is False Positive", "source": "is_false_positive", "dataType": "boolean", "role": "dimension"},
+      {"name": "Status", "source": "status", "dataType": "string", "role": "dimension"}
+    ]
+  }
+}
