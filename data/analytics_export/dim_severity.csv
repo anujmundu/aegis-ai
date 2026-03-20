@@ -1,0 +1,5 @@
+severity_code,severity_name,hourly_cost_rate_usd,target_sla_minutes
+CRITICAL,P1 - Critical Business Outage,180000.0,30
+HIGH,P2 - High Severity Service Degradation,120000.0,60
+MEDIUM,P3 - Moderate Performance Anomaly,25000.0,120
+LOW,P4 - Low Priority Diagnostic Drift,5000.0,240
