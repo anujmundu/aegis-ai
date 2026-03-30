@@ -1,0 +1,204 @@
+# ==============================================================================
+# AegisAI: Production Multi-Container Orchestration (Docker Compose v2.x)
+# ==============================================================================
+services:
+  # ----------------------------------------------------------------------------
+  # 1. AegisAI Primary Inference & Multi-Agent API Microservice
+  # ----------------------------------------------------------------------------
+  aegis-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aegis-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.docker
+    environment:
+      - ENVIRONMENT=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - aegis-network
+
+  # ----------------------------------------------------------------------------
+  # 2. Continuous Background Telemetry Ingestion Worker
+  # ----------------------------------------------------------------------------
+  aegis-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aegis-worker
+    command: ["python", "-m", "apps.worker.telemetry_worker"]
+    env_file:
+      - .env.docker
+    depends_on:
+      aegis-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - aegis-network
+
+  # ----------------------------------------------------------------------------
+  # 3. PostgreSQL 16 Relational & Episodic Incident Memory Store
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: aegis-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: aegis
+      POSTGRES_PASSWORD: aegis_secure_password
+      POSTGRES_DB: aegisai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./data/schemas/init_db.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aegis -d aegisai"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - aegis-network
+
+  # ----------------------------------------------------------------------------
+  # 4. Redis 7 In-Memory Cache & Working Session Memory
+  # ----------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: aegis-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - aegis-network
+
+  # ----------------------------------------------------------------------------
+  # 5. MLflow Tracking Server & Model Registry
+  # ----------------------------------------------------------------------------
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: aegis-mlflow
+    ports:
+      - "5000:5000"
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+    volumes:
+      - mlflow_data:/mlflow
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - aegis-network
+
+  # ----------------------------------------------------------------------------
+  # 6. Prometheus Operational Metrics Engine
+  # ----------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: aegis-prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./infrastructure/docker/prometheus:/etc/prometheus:ro
+      - prometheus_data:/prometheus
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - aegis-network
+
+  # ----------------------------------------------------------------------------
+  # 7. Grafana SRE & Machine Learning Observability Dashboards
+  # ----------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: aegis-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+      GF_AUTH_DISABLE_LOGIN_FORM: "false"
+    volumes:
+      - ./infrastructure/docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - aegis-network
+
+# ------------------------------------------------------------------------------
+# Bridge Network Definition
+# ------------------------------------------------------------------------------
+networks:
+  aegis-network:
+    name: aegis-network
+    driver: bridge
+
+# ------------------------------------------------------------------------------
+# Persistent Volume Declarations
+# ------------------------------------------------------------------------------
+volumes:
+  postgres_data:
+    name: aegis_postgres_data
+  redis_data:
+    name: aegis_redis_data
+  mlflow_data:
+    name: aegis_mlflow_data
+  prometheus_data:
+    name: aegis_prometheus_data
+  grafana_data:
+    name: aegis_grafana_data
