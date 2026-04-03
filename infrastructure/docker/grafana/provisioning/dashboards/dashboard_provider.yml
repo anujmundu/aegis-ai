@@ -1,0 +1,14 @@
+# ==============================================================================
+# Grafana Dashboard Provider Auto-Provisioning for AegisAI
+# ==============================================================================
+apiVersion: 1
+
+providers:
+  - name: "AegisAI Dashboards"
+    orgId: 1
+    folder: "AegisAI Operational Reliability"
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
