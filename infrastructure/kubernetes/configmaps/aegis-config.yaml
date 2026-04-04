@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aegis-config
+  namespace: aegis-system
+  labels:
+    app.kubernetes.io/name: aegis-config
+    app.kubernetes.io/part-of: aegis-reliability-platform
+data:
+  ENVIRONMENT: "production"
+  SERVICE_NAME: "aegis-ai"
+  DEBUG: "false"
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+  API_WORKERS: "4"
+  POSTGRES_HOST: "aegis-postgres-service"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "aegisai"
+  REDIS_HOST: "aegis-redis-service"
+  REDIS_PORT: "6379"
+  REDIS_URL: "redis://aegis-redis-service:6379/0"
+  MLFLOW_TRACKING_URI: "http://aegis-mlflow-service:5000"
+  MLFLOW_EXPERIMENT_NAME: "aegisai-production-benchmark"
+  VECTOR_STORE_TYPE: "faiss"
+  VECTOR_INDEX_PATH: "/app/data/vector_index"
+  EMBEDDING_MODEL_NAME: "BAAI/bge-small-en-v1.5"
+  AEGIS_API_URL: "http://aegis-api-service:8000"
