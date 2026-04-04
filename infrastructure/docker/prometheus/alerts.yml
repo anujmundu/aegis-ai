@@ -1,0 +1,66 @@
+# ==============================================================================
+# Prometheus Alerting Rules for AegisAI SRE & Reliability Operations
+# ==============================================================================
+groups:
+  - name: aegisai_reliability_alerts
+    rules:
+      # 1. Anomaly Detection Latency SLA Violation (p99 > 15ms)
+      - alert: HighAnomalyDetectionLatencySLA
+        expr: histogram_quantile(0.99, sum(rate(aegisai_detection_latency_seconds_bucket[5m])) by (le)) > 0.015
+        for: 2m
+        labels:
+          severity: critical
+          tier: ml-engine
+        annotations:
+          summary: "Anomaly detection p99 latency exceeded 15ms SLA target"
+          description: "Current p99 detection duration is {{ $value }}s (> 0.015s). Check CPU throttling and feature extraction latency."
+
+      # 2. Elevated Anomaly Rate (> 20% anomalous snapshots)
+      - alert: ElevatedAnomalyRate
+        expr: >
+          sum(rate(aegisai_telemetry_snapshots_ingested_total{anomaly_detected="true"}[5m]))
+          /
+          sum(rate(aegisai_telemetry_snapshots_ingested_total[5m])) > 0.20
+        for: 3m
+        labels:
+          severity: warning
+          tier: telemetry-ingestion
+        annotations:
+          summary: "Abnormal surge in telemetry anomalies detected (> 20% of traffic)"
+          description: "Anomaly ratio is {{ $value | humanizePercentage }}. Multiple services may be cascading."
+
+      # 3. Subsystem Health Degraded
+      - alert: DegradedSubsystemHealth
+        expr: aegisai_subsystem_health == 0
+        for: 1m
+        labels:
+          severity: critical
+          tier: platform-core
+        annotations:
+          summary: "Subsystem '{{ $labels.subsystem }}' is degraded"
+          description: "Health gauge for {{ $labels.subsystem }} dropped to 0. Inspect microservice logs immediately."
+
+      # 4. Low RAG Citation Grounding Score (< 95%)
+      - alert: LowRAGGroundingScore
+        expr: histogram_quantile(0.50, sum(rate(aegisai_rag_grounding_score_bucket[5m])) by (le)) < 0.95
+        for: 2m
+        labels:
+          severity: warning
+          tier: multi-agent-rag
+        annotations:
+          summary: "Multi-Agent hypothesis grounding score dropped below 95% threshold"
+          description: "Current median grounding score is {{ $value }}. Hypotheses may contain unverified assertions."
+
+      # 5. High HTTP 5xx Error Rate (> 1%)
+      - alert: HighHTTP5xxErrorRate
+        expr: >
+          sum(rate(aegisai_http_requests_total{status_code=~"5.."}[5m]))
+          /
+          sum(rate(aegisai_http_requests_total[5m])) > 0.01
+        for: 2m
+        labels:
+          severity: critical
+          tier: api-gateway
+        annotations:
+          summary: "HTTP 5xx server error rate exceeds 1% of total API traffic"
+          description: "Server error rate is {{ $value | humanizePercentage }}."

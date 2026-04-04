@@ -1,0 +1,28 @@
+# ==============================================================================
+# Prometheus Scrape Configuration for AegisAI
+# ==============================================================================
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+  scrape_timeout: 4s
+
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  # AegisAI FastAPI Microservice Telemetry & Anomaly Metrics
+  - job_name: "aegis-api"
+    metrics_path: "/metrics"
+    scheme: "http"
+    static_configs:
+      - targets: ["aegis-api:8000"]
+        labels:
+          environment: "production"
+          service: "aegis-ai-microservice"
+
+  # Prometheus Self-Monitoring
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+        labels:
+          service: "prometheus-server"
