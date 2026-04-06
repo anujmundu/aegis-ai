@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aegis-ingress
+  namespace: aegis-system
+  labels:
+    app.kubernetes.io/name: aegis-ingress
+    app.kubernetes.io/part-of: aegis-reliability-platform
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: aegis.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: aegis-api-service
+                port:
+                  number: 8000
+    - host: mlflow.aegis.internal
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: aegis-mlflow-service
+                port:
+                  number: 5000
