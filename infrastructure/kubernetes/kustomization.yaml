@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: aegis-system
+
+resources:
+  - namespace.yaml
+  - configmaps/aegis-config.yaml
+  - secrets/aegis-secrets.yaml
+  - services/aegis-services.yaml
+  - deployments/aegis-postgres-deployment.yaml
+  - deployments/aegis-redis-deployment.yaml
+  - deployments/aegis-mlflow-deployment.yaml
+  - deployments/aegis-api-deployment.yaml
+  - deployments/aegis-worker-deployment.yaml
+  - hpa.yaml
+  - ingress.yaml
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: aegis-reliability-platform
+      environment: production
