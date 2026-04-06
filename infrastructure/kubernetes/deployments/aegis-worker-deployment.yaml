@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aegis-worker-deployment
+  namespace: aegis-system
+  labels:
+    app: aegis-worker
+    tier: background-worker
+    app.kubernetes.io/name: aegis-worker
+    app.kubernetes.io/part-of: aegis-reliability-platform
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: aegis-worker
+  template:
+    metadata:
+      labels:
+        app: aegis-worker
+        tier: background-worker
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+      initContainers:
+        - name: wait-for-api
+          image: busybox:1.36
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for AegisAI API at aegis-api-service:8000..."
+              until nc -z -w 2 aegis-api-service 8000; do
+                sleep 2
+              done
+              echo "AegisAI API is reachable."
+      containers:
+        - name: aegis-worker
+          image: aegisai/api:latest
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "apps.worker.telemetry_worker"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          envFrom:
+            - configMapRef:
+                name: aegis-config
+            - secretRef:
+                name: aegis-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
