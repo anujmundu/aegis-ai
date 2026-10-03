@@ -521,7 +521,7 @@ $$\text{RRF}(d) = \sum_{m \in \{\text{BM25}, \text{Dense}\}} \frac{1}{k + \text{
 ### 6. Cryptographic HMAC-SHA256 Human Authorization Token
 High-risk remediation webhooks require a cryptographically signed approval token with a 15-minute expiration:
 
-$$\text{Token} = \operatorname{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident-id} \parallel \text{action-type} \parallel \text{target-resource} \parallel t_{\text{expire}}\right)$$
+$$\text{Token} = \text{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident-id} \parallel \text{action-type} \parallel \text{target-resource} \parallel t_{\text{expire}}\right)$$
 
 ---
 
@@ -639,6 +639,4 @@ Maulana Azad National Institute of Technology (MANIT), Bhopal
 
 ---
 
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+* **License**: MIT
