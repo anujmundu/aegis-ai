@@ -25,31 +25,31 @@ A comprehensive visual tour of AegisAI's live operational telemetry, multi-agent
 
 ### 📊 Grafana SRE & Machine Learning Observability Dashboards
 
-| View / Dashboard | Description & Live Telemetry | Direct Link |
+| View / Dashboard | Description & Live Telemetry | Local Service Route |
 | :--- | :--- | :--- |
-| **Grafana Observability Portal (Home)**<br>![Grafana Home](screenshots/05_grafana_home.png) | Welcome overview and navigation portal across all provisioned organizational metric spaces and active telemetry data sources. | [`http://localhost:3000/`](http://localhost:3000/) |
-| **AegisAI Dashboards Directory**<br>![Grafana Dashboards List](screenshots/05b_grafana_dashboards_list.png) | Operational Reliability folder containing provisioned dashboards, tagged by `aegisai`, `ai-agents`, `mlops`, `rag`, and `sre`. | [`http://localhost:3000/dashboards`](http://localhost:3000/dashboards) |
-| **AI Incident Intelligence & Model Observability**<br>![AI Model Observability](screenshots/05c_grafana_model_observability.png) | **Live Data:** Anomaly Detections by Detector Type (rate/min across Z-Score, EWMA, Mahalanobis, Modified Z-Score), p99 Latency SLA ($4.90\text{ ms} < 15\text{ ms}$), Multi-Agent RAG Grounding Fidelity ($99.0\%$ SLA pass), and Proposed vs Executed Remediation Actions Pipeline. | [`Dashboard URL`](http://localhost:3000/d/aegis-model-observability/948ad661-f8f0-5060-af42-9d5de81ca3ac) |
-| **Autonomous Incident & Operational Reliability**<br>![Operational Reliability](screenshots/05d_grafana_reliability_overview.png) | Continuous service uptime tracking (5.78h+), four-tier subsystem health status (100% Nominal), platform execution history, and statistical inference SLA gauge (1.44ms). | [`Dashboard URL`](http://localhost:3000/d/aegis-reliability-overview/62ce1430-38f9-52b7-89dc-2de6c9dcd9d4) |
-| **SRE Operational Overview & Platform SLA**<br>![SRE Overview](screenshots/05e_grafana_sre_overview.png) | End-to-End HTTP ingestion throughput (HTTP 200 / 422 / 404 req/s), and real-time API latency percentiles ($p50 = 2.88\text{ ms}$, $p95 = 5.47\text{ ms}$, $p99 = 6.53\text{ ms}$). | [`Dashboard URL`](http://localhost:3000/d/aegis-sre-overview/080005d7-887e-5d76-8775-909ae2ac019d) |
+| **Grafana Observability Portal (Home)**<br>![Grafana Home](screenshots/05_grafana_home.png) | Welcome overview and navigation portal across all provisioned organizational metric spaces and active telemetry data sources. | `Port :3000` (`/`) |
+| **AegisAI Dashboards Directory**<br>![Grafana Dashboards List](screenshots/05b_grafana_dashboards_list.png) | Operational Reliability folder containing provisioned dashboards, tagged by `aegisai`, `ai-agents`, `mlops`, `rag`, and `sre`. | `Port :3000` (`/dashboards`) |
+| **AI Incident Intelligence & Model Observability**<br>![AI Model Observability](screenshots/05c_grafana_model_observability.png) | **Live Data:** Anomaly Detections by Detector Type (rate/min across Z-Score, EWMA, Mahalanobis, Modified Z-Score), p99 Latency SLA ($4.90\text{ ms} < 15\text{ ms}$), Multi-Agent RAG Grounding Fidelity ($99.0\%$ SLA pass), and Proposed vs Executed Remediation Actions Pipeline. | `Port :3000` (`/d/aegis-model-observability`) |
+| **Autonomous Incident & Operational Reliability**<br>![Operational Reliability](screenshots/05d_grafana_reliability_overview.png) | Continuous service uptime tracking (5.78h+), four-tier subsystem health status (100% Nominal), platform execution history, and statistical inference SLA gauge (1.44ms). | `Port :3000` (`/d/aegis-reliability-overview`) |
+| **SRE Operational Overview & Platform SLA**<br>![SRE Overview](screenshots/05e_grafana_sre_overview.png) | End-to-End HTTP ingestion throughput (HTTP 200 / 422 / 404 req/s), and real-time API latency percentiles ($p50 = 2.88\text{ ms}$, $p95 = 5.47\text{ ms}$, $p99 = 6.53\text{ ms}$). | `Port :3000` (`/d/aegis-sre-overview`) |
 
 ### 📈 Prometheus TSDB Metrics Engine, Multi-Panel Explorer & Alerts
 
-| View / Explorer | Operational Description & Live Metrics Queried | Direct Link |
+| View / Explorer | Operational Description & Live Metrics Queried | Local Service Route |
 | :--- | :--- | :--- |
-| **Prometheus Graph Explorer (Live Curves)**<br>![Prometheus Live Graph](screenshots/03_prometheus_graph_explorer.png) | Active real-time timeseries graph evaluating `sum(rate(aegisai_anomaly_detections_total[5m])) by (detector_type)` across `z_score`, `ewma`, `mahalanobis`, `modified_z_score`, and `correlation_drift`. | [`http://localhost:9090/graph`](http://localhost:9090/graph) |
-| **Prometheus Multi-Panel Graph Tab**<br>![Prometheus Multi-Panel Graph](screenshots/03a_prometheus_graph_tab_multipanel.png) | Stacked multi-panel timeseries curves displaying Anomaly Detections rate alongside Detection Latency p99 SLA ($4.90\text{ ms} < 15\text{ ms}$ threshold). | [`Multi-Panel Graph URL`](http://localhost:9090/graph?g0.expr=sum(rate(aegisai_anomaly_detections_total%5B5m%5D))+by+(detector_type)&g0.tab=0&g0.range_input=30m&g1.expr=histogram_quantile(0.99,+sum(rate(aegisai_detection_latency_seconds_bucket%5B5m%5D))+by+(le))&g1.tab=0&g1.range_input=30m) |
-| **Prometheus Multi-Panel Table Tab**<br>![Prometheus Multi-Panel Table](screenshots/03b_prometheus_table_tab_multipanel.png) | Stacked tabular metric panels evaluating `aegisai_subsystem_health` (all 4 subsystems Nominal: 1), remediation actions pipeline breakdown, and detection counters across CRITICAL/HIGH/MEDIUM severities. | [`Multi-Panel Table URL`](http://localhost:9090/graph?g0.expr=aegisai_subsystem_health&g0.tab=1&g1.expr=sum(aegisai_remediation_actions_total)+by+(action_type,+status)&g1.tab=1&g2.expr=sum(aegisai_anomaly_detections_total)+by+(detector_type,+severity)&g2.tab=1) |
-| **Prometheus Reliability Alerts Console**<br>![Prometheus Alerts](screenshots/03c_prometheus_alerts_rules.png) | 5 live production SRE alerting rules: `HighAnomalyDetectionLatencySLA`, `ElevatedAnomalyRate`, `DegradedSubsystemHealth`, `LowRAGGroundingScore`, and `HighHTTP5xxErrorRate`. | [`http://localhost:9090/alerts`](http://localhost:9090/alerts) |
-| **Prometheus Cluster Targets & Scrape Health**<br>![Prometheus Targets](screenshots/04_prometheus_targets_health.png) | 100% UP health checks across `aegis-api` microservice and internal Prometheus endpoints. | [`http://localhost:9090/targets`](http://localhost:9090/targets) |
+| **Prometheus Graph Explorer (Live Curves)**<br>![Prometheus Live Graph](screenshots/03_prometheus_graph_explorer.png) | Active real-time timeseries graph evaluating `sum(rate(aegisai_anomaly_detections_total[5m])) by (detector_type)` across `z_score`, `ewma`, `mahalanobis`, `modified_z_score`, and `correlation_drift`. | `Port :9090` (`/graph`) |
+| **Prometheus Multi-Panel Graph Tab**<br>![Prometheus Multi-Panel Graph](screenshots/03a_prometheus_graph_tab_multipanel.png) | Stacked multi-panel timeseries curves displaying Anomaly Detections rate alongside Detection Latency p99 SLA ($4.90\text{ ms} < 15\text{ ms}$ threshold). | `Port :9090` (`/graph` - Multi-Panel) |
+| **Prometheus Multi-Panel Table Tab**<br>![Prometheus Multi-Panel Table](screenshots/03b_prometheus_table_tab_multipanel.png) | Stacked tabular metric panels evaluating `aegisai_subsystem_health` (all 4 subsystems Nominal: 1), remediation actions pipeline breakdown, and detection counters across CRITICAL/HIGH/MEDIUM severities. | `Port :9090` (`/graph` - Multi-Table) |
+| **Prometheus Reliability Alerts Console**<br>![Prometheus Alerts](screenshots/03c_prometheus_alerts_rules.png) | 5 live production SRE alerting rules: `HighAnomalyDetectionLatencySLA`, `ElevatedAnomalyRate`, `DegradedSubsystemHealth`, `LowRAGGroundingScore`, and `HighHTTP5xxErrorRate`. | `Port :9090` (`/alerts`) |
+| **Prometheus Cluster Targets & Scrape Health**<br>![Prometheus Targets](screenshots/04_prometheus_targets_health.png) | 100% UP health checks across `aegis-api` microservice and internal Prometheus endpoints. | `Port :9090` (`/targets`) |
 
 ### 🛠️ Production Microservices, Multi-Agent Triage & Cloud Mesh
 
 | Component | Operational Snapshot | Technical Verification |
 | :--- | :--- | :--- |
-| **FastAPI Swagger 3.1 & OpenAPI Documentation** | ![FastAPI Docs](screenshots/01_fastapi_swagger_docs.png) | High-throughput telemetry ingestion, statistical triage, and HMAC operator approval webhooks (`http://127.0.0.1:8000/docs`). |
+| **FastAPI Swagger 3.1 & OpenAPI Documentation** | ![FastAPI Docs](screenshots/01_fastapi_swagger_docs.png) | High-throughput telemetry ingestion, statistical triage, and HMAC operator approval webhooks (`Port :8000/docs`). |
 | **FastAPI ReDoc Interactive Spec** | ![FastAPI ReDoc](screenshots/02_fastapi_redoc.png) | Enterprise OpenAPI 3.1 specifications with complete Pydantic contract schemas. |
-| **MLflow Production Tracking & Registry** | ![MLflow Tracking](screenshots/06_mlflow_tracking_server.png) | Experiment tracking across XGBoost classifiers, Isolation Forests, and Autoencoder models (`http://127.0.0.1:5000`). |
+| **MLflow Production Tracking & Registry** | ![MLflow Tracking](screenshots/06_mlflow_tracking_server.png) | Experiment tracking across XGBoost classifiers, Isolation Forests, and Autoencoder models (`Port :5000`). |
 | **Docker Compose Multi-Container Mesh** | ![Docker Mesh](screenshots/07_docker_container_mesh.png) | 7 orchestrated enterprise containers: API, Worker, Postgres 16, Redis 7, Prometheus, Grafana, MLflow. |
 | **Real-World Telemetry Pipeline & Benchmark** | ![Real-World Benchmark](screenshots/08_real_world_pipeline_benchmark.png) | 340,000+ snapshots evaluated across Standard & Adversarial NAB and SMD datasets. |
 | **LangGraph Multi-Agent Triage & HMAC Approval** | ![Multi-Agent Triage](screenshots/09_multi_agent_triage_approval.png) | Autonomous diagnostic cycle: Statistician -> Retriever -> Investigator -> Validator -> HMAC Approval. |
@@ -153,14 +153,14 @@ Grounded in enterprise actuarial financial risk models evaluated across 48 calib
 
 ## 📸 Comprehensive Visual System Showcase (20 High-Resolution Views)
 
-AegisAI includes fully functional, containerized web interfaces, metric explorers, MLOps portals, multi-agent investigation graphs, and executive analytics scorecards. All interfaces are live and verifiable on `http://localhost`.
+AegisAI includes fully functional, containerized web interfaces, metric explorers, MLOps portals, multi-agent investigation graphs, and executive analytics scorecards. When deployed in local development, all interfaces are bound to their respective container ports.
 
 ### 1. 🌐 Interactive API & Telemetry Ingestion Plane
 
-| Interface & Subsystem | Operational Capability | Live Endpoint / Access |
+| Interface & Subsystem | Operational Capability | Local Service Route |
 | :--- | :--- | :--- |
-| **FastAPI Swagger UI** | Interactive OpenAPI 3.1 specification for telemetry batch streaming, anomaly detection, incident triage, and operator approval webhooks. | [`http://localhost:8000/docs`](http://localhost:8000/docs) |
-| **Enterprise ReDoc Portal** | Structured contract documentation specifying four-tier payload schemas (Infra, App, DB, Business) and quarantine DLQ definitions. | [`http://localhost:8000/redoc`](http://localhost:8000/redoc) |
+| **FastAPI Swagger UI** | Interactive OpenAPI 3.1 specification for telemetry batch streaming, anomaly detection, incident triage, and operator approval webhooks. | `Port :8000` (`/docs`) |
+| **Enterprise ReDoc Portal** | Structured contract documentation specifying four-tier payload schemas (Infra, App, DB, Business) and quarantine DLQ definitions. | `Port :8000` (`/redoc`) |
 
 #### 🖼️ FastAPI Production Swagger UI
 ![FastAPI Swagger UI](screenshots/01_fastapi_swagger_docs.png)
@@ -172,15 +172,15 @@ AegisAI includes fully functional, containerized web interfaces, metric explorer
 
 ### 2. 📈 Real-Time Observability & MLOps Infrastructure
 
-| Interface & Subsystem | Operational Capability | Live Endpoint / Access |
+| Interface & Subsystem | Operational Capability | Local Service Route |
 | :--- | :--- | :--- |
-| **Prometheus Graph Explorer** | Sub-second metric scraping engine querying active anomaly rates, latencies, and subsystem health curves. | [`http://localhost:9090/graph`](http://localhost:9090/graph) |
-| **Prometheus Multi-Panel Graph Tab** | Multi-panel stacked timeseries visualizing anomaly rate dynamics alongside p99 detection latency SLAs. | [`Prometheus Multi-Graph`](http://localhost:9090/graph?g0.expr=sum(rate(aegisai_anomaly_detections_total%5B5m%5D))+by+(detector_type)&g0.tab=0&g0.range_input=30m&g1.expr=histogram_quantile(0.99,+sum(rate(aegisai_detection_latency_seconds_bucket%5B5m%5D))+by+(le))&g1.tab=0&g1.range_input=30m) |
-| **Prometheus Multi-Panel Table Tab** | Multi-panel instant vector tables showing health status, remediation actions, and detector breakdown. | [`Prometheus Multi-Table`](http://localhost:9090/graph?g0.expr=aegisai_subsystem_health&g0.tab=1&g1.expr=sum(aegisai_remediation_actions_total)+by+(action_type,+status)&g1.tab=1&g2.expr=sum(aegisai_anomaly_detections_total)+by+(detector_type,+severity)&g2.tab=1) |
-| **Prometheus Alerts Console** | 5 active production alerting rules evaluating latency, error rates, subsystem health, and RAG grounding fidelity. | [`http://localhost:9090/alerts`](http://localhost:9090/alerts) |
-| **Prometheus Scraping Targets** | High-availability target health monitoring verifying `aegis-api` (1/1 UP) and `prometheus` (1/1 UP) instances. | [`http://localhost:9090/targets`](http://localhost:9090/targets) |
-| **Grafana Enterprise Dashboards** | Pre-configured reliability dashboards visualizing real-time telemetry waveforms, anomaly heatmaps, and SRE alerting thresholds. | [`http://localhost:3000`](http://localhost:3000) *(Anonymous Admin)* |
-| **MLflow Model Registry** | Centralized tracking server managing model versions, parameters, loss curves, and artifact lineage for XGBoost, Isolation Forest, and Deep Autoencoders. | [`http://localhost:5000`](http://localhost:5000) |
+| **Prometheus Graph Explorer** | Sub-second metric scraping engine querying active anomaly rates, latencies, and subsystem health curves. | `Port :9090` (`/graph`) |
+| **Prometheus Multi-Panel Graph Tab** | Multi-panel stacked timeseries visualizing anomaly rate dynamics alongside p99 detection latency SLAs. | `Port :9090` (`/graph` - Multi-Panel) |
+| **Prometheus Multi-Panel Table Tab** | Multi-panel instant vector tables showing health status, remediation actions, and detector breakdown. | `Port :9090` (`/graph` - Multi-Table) |
+| **Prometheus Alerts Console** | 5 active production alerting rules evaluating latency, error rates, subsystem health, and RAG grounding fidelity. | `Port :9090` (`/alerts`) |
+| **Prometheus Scraping Targets** | High-availability target health monitoring verifying `aegis-api` (1/1 UP) and `prometheus` (1/1 UP) instances. | `Port :9090` (`/targets`) |
+| **Grafana Enterprise Dashboards** | Pre-configured reliability dashboards visualizing real-time telemetry waveforms, anomaly heatmaps, and SRE alerting thresholds. | `Port :3000` *(Anonymous Admin)* |
+| **MLflow Model Registry** | Centralized tracking server managing model versions, parameters, loss curves, and artifact lineage for XGBoost, Isolation Forest, and Deep Autoencoders. | `Port :5000` |
 
 #### 🖼️ Prometheus Graph Explorer — Live Multi-Detector Anomaly Timeseries
 ![Prometheus Graph Explorer](screenshots/03_prometheus_graph_explorer.png)
@@ -521,7 +521,7 @@ $$\text{RRF}(d) = \sum_{m \in \{\text{BM25}, \text{Dense}\}} \frac{1}{k + \text{
 ### 6. Cryptographic HMAC-SHA256 Human Authorization Token
 High-risk remediation webhooks require a cryptographically signed approval token with a 15-minute expiration:
 
-$$\text{Token} = \text{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident\_id} \,\|\, \text{action\_type} \,\|\, \text{target\_resource} \,\|\, t_{\text{expire}}\right)$$
+$$\text{Token} = \operatorname{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident-id} \parallel \text{action-type} \parallel \text{target-resource} \parallel t_{\text{expire}}\right)$$
 
 ---
 
@@ -600,7 +600,7 @@ $$\text{Token} = \text{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident\_id} 
    ```bash
    python -m ml.pipelines.retrain --experiment-name="aegisai-model-drift-retrain"
    ```
-3. **Promotion Quality Gate:** The candidate model is verified against the champion baseline in MLflow (`http://localhost:5000`). If Precision $\ge 0.90$, Recall $\ge 0.88$, and $p99 < 15\text{ms}$, it is automatically promoted to production champion.
+3. **Promotion Quality Gate:** The candidate model is verified against the champion baseline in MLflow (`Port :5000`). If Precision $\ge 0.90$, Recall $\ge 0.88$, and $p99 < 15\text{ms}$, it is automatically promoted to production champion.
 
 ### 📖 SOP-003: Disaster Recovery, High Availability & Business Continuity
 1. **SLA Targets:** Recovery Point Objective (**RPO < 1 minute**), Recovery Time Objective (**RTO < 15 minutes**).
@@ -615,42 +615,30 @@ $$\text{Token} = \text{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident\_id} 
 
 ---
 
-## 🎓 Technical Interview Defense & System Design Deep-Dive
+# 👨‍💻 Author
 
-For engineering leads, architects, and technical interviewers evaluating AegisAI, here are the architectural justifications for our key system design decisions:
+## Anuj Mundu
 
-### Q1: Why not use an end-to-end Deep Learning sequence model (LSTM or Transformer) for all anomaly detection?
-> **Answer:** End-to-end deep sequence models introduce three fatal flaws in high-throughput enterprise SRE environments:
-> 1. **Inference Latency:** Transformers and LSTMs require 150ms to 300ms per inference window, making sub-15ms SLAs impossible at 100k events/sec without massive GPU clusters.
-> 2. **Compute Cost:** Requiring GPUs across every edge and cloud node increases operational costs tenfold.
-> 3. **Mathematical Interpretability:** Deep sequence models are black boxes that cannot provide exact covariance attribution vectors.
-> 
-> AegisAI's dual-stage architecture gives the best of both worlds: Stage 1 (Dynamic Z-Score, EWMA, and Mahalanobis distance) runs in $< 2\text{ms}$ on CPU, filtering out $> 99.8\%$ of nominal traffic with mathematical interpretability. Stage 2 (Autoencoder + Isolation Forest + XGBoost) only runs on candidate triggers, completing deep inference in $< 8\text{ms}$.
+**Master of Computer Applications (MCA)**  
+Maulana Azad National Institute of Technology (MANIT), Bhopal
 
-### Q2: How do you mathematically guarantee that the LangGraph Multi-Agent system will not hallucinate remediation commands?
-> **Answer:** We enforce a two-stage deterministic safety gate:
-> 1. **Validator Agent Grounding Gate ($\ge 95\%$ SLA):** The Validator Agent parses every claim in the Supervisor's hypothesis and calculates token-level citation overlap and semantic entailment against live Prometheus metric vectors and ingested markdown runbook chunks retrieved via Hybrid RAG (BM25 + Dense embeddings with Reciprocal Rank Fusion, $k=60$). If the grounding score falls below 0.95, the hypothesis is rejected.
-> 2. **Cryptographic HMAC-SHA256 Token Gating:** The Action Agent operates in dry-run simulation mode by default. Destructive actions cannot be executed autonomously; they require a cryptographically signed HMAC-SHA256 token dispatched to an on-call SRE with a 15-minute time-to-live.
+### Areas of Interest
 
-### Q3: Why separate memory into three distinct tiers instead of using a single database like PostgreSQL with pgvector?
-> **Answer:** A single database engine creates resource contention during production incidents:
-> 1. **Working Memory (Redis):** During active investigation loops, multiple agents read and write volatile scratchpads dozens of times per second. Polling PostgreSQL for these ephemeral mutations exhausts connection pools. Redis handles these in-memory with sub-millisecond latency and automated TTL eviction.
-> 2. **Episodic Memory (PostgreSQL):** Postmortems, resolved incident records, and cryptographic authorization tokens require strict ACID relational guarantees for audit and compliance.
-> 3. **Semantic Memory (FAISS + BM25):** Vector similarity search and sparse BM25 lexical ranking require optimized indexing structures (IVFFlat / HNSW and inverted indexes) that run most efficiently in dedicated in-memory caches.
-
-### Q4: How does AegisAI prevent alert fatigue during cascading failures?
-> **Answer:** In traditional APMs, a single root cause (e.g., database connection pool exhaustion) triggers hundreds of downstream alerts across application, cache, and HTTP gateway layers. AegisAI prevents this through **Multivariate Mahalanobis Distance with Regularized Covariance Inversion**:
-> 
-> $$D_M(\mathbf{x}) = \sqrt{(\mathbf{x} - \boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu})}$$
-> 
-> The inverted covariance matrix $\mathbf{\Sigma}^{-1}$ naturally suppresses variance that is expected given the cross-correlation between signals. Furthermore, the Supervisor Agent correlates multi-tier events into a single **Unified Evidence Graph**, collapsing hundreds of downstream metric spikes into a single root-cause incident.
-
-### Q5: How do you achieve true cloud-agnostic portability without relying on expensive emulators?
-> **Answer:** Rather than using heavy emulators like LocalStack or Azurite (which consume 8GB+ RAM and cause flaky CI runs), we implemented an abstract **`CloudProviderFactory`**. The core application interacts exclusively with abstract interfaces (`CloudStorageAdapter`, `CloudMonitoringAdapter`, `CloudSecretManagerAdapter`). In production, native cloud drivers connect to AWS, GCP, or Azure. In local development and CI testing, high-performance in-memory and filesystem providers run with zero external cloud dependencies, zero latency, and $0 / ₹0 compute cost.
+- Artificial Intelligence
+- Agentic AI
+- Retrieval-Augmented Generation
+- Large Language Models
+- Machine Learning
+- Full-Stack AI Engineering
+- AI Systems Design
 
 ---
 
-## 📄 License & Attribution
+**GitHub:**  
+[https://github.com/anujmundu](https://github.com/anujmundu)
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.  
-**Architect & Engineering Lead:** Anuj Mundu
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
