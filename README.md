@@ -147,7 +147,7 @@ Grounded in enterprise actuarial financial risk models evaluated across 48 calib
 | **Phase 11** | Kubernetes | HA Deployments, ClusterIP Services, ConfigMaps, Secrets, Ingress, HPA | Kustomize Validated| `COMPLETED` |
 | **Phase 12** | Multi-Cloud | Cloud-agnostic storage, monitoring, and secret adapters (AWS, GCP, Azure, Local)| 17 Tests | `COMPLETED` |
 | **Phase 13** | BI Analytics | Star Schema DDL, Power BI DAX & Semantic Model, Tableau Workbook Specs | 13 Tests | `COMPLETED` |
-| **Phase 14** | Hardening | Architecture Decision Records (ADRs), Operational Runbooks, Interview Defense | 143/143 Overall | `COMPLETED` |
+| **Phase 14** | Hardening | Architecture Decision Records, Operational Runbooks & Production Hardening | 143/143 Overall | `COMPLETED` |
 
 ---
 
@@ -243,65 +243,118 @@ AegisAI includes fully functional, containerized web interfaces, metric explorer
 
 ---
 
-## 🚀 Quickstart & Developer Guide
+## 🚀 Quick Setup & Developer Guide
 
-### 1. Local-First Setup (Zero-Cost ₹0 Baseline)
-```powershell
-# Clone and enter workspace
-git clone https://github.com/anujmundu/AegisAI.git
-cd AegisAI
+Follow this guide to clone, install dependencies, run the test suite, and launch the AegisAI platform locally or in containerized mode.
 
-# Initialize virtual environment (Python 3.11.9)
-python -m venv .venv
-.\.venv\Scripts\activate
+### ⚡ Quick Setup Guide (Pull, Install & Run)
 
-# Install dependencies
-pip install -r requirements.txt
+#### 1. Prerequisites
+- **Python**: Version `3.10` or `3.11` (`3.11.9` recommended)
+- **Git**: Installed and on system PATH
+- **Docker & Docker Compose** *(Optional, for multi-container microservice mesh)*
 
-# Run the complete test suite (143/143 passing)
-pytest -v tests/
+#### 2. Clone the Repository
+```bash
+git clone https://github.com/anujmundu/aegis-ai.git
+cd aegis-ai
 ```
 
-### 2. Multi-Cloud Diagnostic Verification
-AegisAI includes a built-in pre-flight diagnostic runner that verifies storage, telemetry publishing, and secret managers across cloud providers without requiring external credentials:
-```powershell
+#### 3. Create & Activate Virtual Environment
+```bash
+# Initialize virtual environment
+python -m venv .venv
+
+# Activate on Windows (PowerShell):
+.\.venv\Scripts\Activate.ps1
+# Activate on Windows (Command Prompt):
+.\.venv\Scripts\activate.bat
+# Activate on Linux / macOS:
+source .venv/bin/activate
+```
+
+#### 4. Install Dependencies
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+#### 5. Configure Environment Variables
+```bash
+# Create local environment config from template
+# On Linux / macOS:
+cp .env.example .env
+# On Windows (PowerShell):
+Copy-Item .env.example .env
+```
+
+#### 6. Run Complete Test Suite
+Verify that all core engines, mathematical filters, machine learning classifiers, multi-agent workflows, and cloud adapters pass:
+```bash
+pytest tests/ -v
+```
+*(100% test pass rate: 143 passed in ~24s)*
+
+---
+
+### 🖥️ Running the System
+
+#### Option A: Run the FastAPI Telemetry Ingestion API Locally
+Start the high-throughput asynchronous telemetry ingestion service:
+```bash
+uvicorn apps.api.main:create_app --factory --host 127.0.0.1 --port 8000 --reload
+```
+Once started, the following local microservice endpoints are active:
+- **Interactive Swagger UI:** `Port :8000` (`/docs`)
+- **OpenAPI 3.1 ReDoc Portal:** `Port :8000` (`/redoc`)
+- **Health & Subsystem Status:** `Port :8000` (`/health`)
+- **Prometheus Metric Exposition:** `Port :8000` (`/metrics`)
+
+#### Option B: Run the Real-World Production Pipeline Benchmark
+Execute the complete end-to-end telemetry pipeline across benchmark NAB and SMD datasets (Data Contract validation, Dynamic Z-Score, EWMA, Mahalanobis Distance, Autoencoder, XGBoost, and LangGraph Multi-Agent Triage):
+```bash
+python scripts/run_real_world_pipeline.py
+```
+
+#### Option C: Launch the Full Docker Container Mesh
+Orchestrate all 7 microservices (FastAPI API, Background Worker, PostgreSQL 16, Redis 7, Prometheus, Grafana, and MLflow):
+```bash
+docker compose up -d --build
+```
+Container routing when deployed locally:
+- **FastAPI Ingestion & Swagger UI:** `Port :8000` (`/docs`)
+- **Prometheus TSDB & Multi-Panel Explorer:** `Port :9090` (`/graph`)
+- **Grafana Enterprise Dashboards:** `Port :3000` *(Anonymous Admin)*
+- **MLflow Model Registry Server:** `Port :5000`
+
+---
+
+### 🛠️ Developer & Operational Tooling
+
+#### Multi-Cloud Diagnostic Verification
+Verify storage adapters, telemetry publishing, and secret manager interfaces across cloud providers without incurring cloud fees:
+```bash
 # Check active provider configuration
 python -m infrastructure.cloud.cli status
 
-# Test end-to-end sync across AWS, GCP, Azure, and Local
+# Test end-to-end sync across AWS, GCP, Azure, and Local providers
 python -m infrastructure.cloud.cli test-sync --provider=aws
 python -m infrastructure.cloud.cli test-sync --provider=gcp
 python -m infrastructure.cloud.cli test-sync --provider=azure
 python -m infrastructure.cloud.cli test-sync --provider=local
 ```
 
-### 3. Executive Business Intelligence Generation
-Generate calibrated annual incident benchmark datasets, Power BI Star-Schema CSVs, and C-Suite reports:
-```powershell
-# Generate datasets and export BI files
+#### Executive Business Intelligence Generation
+Generate calibrated annual incident benchmark datasets, Power BI Star-Schema CSVs, and C-Suite executive reports:
+```bash
+# Generate datasets and export BI Star-Schema CSVs
 python -m apps.analytics.cli generate --out-dir=data/analytics_export
 
-# View Executive Board Scorecard in terminal
+# View Executive Board Scorecard directly in terminal
 python -m apps.analytics.cli kpis
 
-# Export full C-Suite Markdown ROI Report
+# Export C-Suite Markdown ROI Report
 python -m apps.analytics.cli report
-```
-
-### 4. Running the Multi-Container Docker Mesh
-Spin up the complete microservice mesh (FastAPI, PostgreSQL 15, Redis 7, MLflow, Prometheus, and Grafana):
-```powershell
-docker compose up -d --build
-```
-- **FastAPI API & Swagger UI:** `http://localhost:8000/docs`
-- **Prometheus Metric Explorer:** `http://localhost:9090`
-- **Grafana Reliability Dashboards:** `http://localhost:3000` (admin/admin)
-- **MLflow Model Registry:** `http://localhost:5000`
-
-### 5. Running the Real-World Production Pipeline Benchmark
-Execute the complete multi-tier real-world verification pipeline (Data Contract Firewall, Statistical Engine, XGBoost, Isolation Forest, LangGraph Multi-Agent Triage, and live cluster batch ingestion):
-```powershell
-python scripts/run_real_world_pipeline.py
 ```
 
 ---
@@ -541,19 +594,19 @@ $$\text{Token} = \text{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident-id} \
 
 ---
 
-## 🏛️ Architecture Decision Records (ADRs Explained)
+## 🏛️ Architecture Decision Records
 
-### 📜 ADR-001: Dual-Stage Hybrid Anomaly Detection
+### 📜 Dual-Stage Hybrid Anomaly Detection
 - **Context:** Enterprise production telemetry exhibits severe class imbalance ($< 0.1\%$ anomalous events) and non-stationary baselines. Heavy deep learning models take >150ms per window and require GPUs, while pure statistical thresholds miss multivariate drift.
 - **Decision:** Adopt a dual-stage pipeline. Stage 1 executes rolling dynamic Z-Score/MAD, EWMA drift, and Mahalanobis distance filters in $< 2\text{ms}$. Stage 2 executes PyTorch Autoencoders, Isolation Forests, and a 17-feature XGBoost classifier in $< 8\text{ms}$.
 - **Consequences:** Sustains sub-15ms inference latency ($p99 < 15\text{ms}$) on commodity CPU nodes, reduces false positive alarms by over 90%, and requires zero GPU hardware.
 
-### 📜 ADR-002: LangGraph Stateful Multi-Agent Investigation Architecture
+### 📜 LangGraph Stateful Multi-Agent Investigation Architecture
 - **Context:** Investigating distributed systems outages requires specialized collaboration: querying logs, performing statistical hypothesis tests, searching runbooks, and formulating syntheses. Unstructured agent swarms suffer from conversational drift and infinite loops.
 - **Decision:** Implement LangGraph Stateful Directed Cyclic Graphs (`StateGraph`) with a strictly typed `ReliabilityState` Pydantic schema and a centralized Supervisor Agent orchestrating specialized workers.
 - **Consequences:** Eliminates infinite loops, enforces bounded recursion, guarantees deterministic state transitions, and enables native Human-in-the-Loop breakpoints.
 
-### 📜 ADR-003: Three-Tier Operational Memory Architecture
+### 📜 Three-Tier Operational Memory Architecture
 - **Context:** An incident intelligence platform cannot be stateless. Storing high-frequency investigation scratchpads in PostgreSQL caused connection pool exhaustion; storing audit trails in vector databases broke relational ACID compliance.
 - **Decision:** Implement a three-tier memory topology:
   1. *Tier 1 (Working Memory):* Redis 7+ for ephemeral sub-millisecond session state with TTL expiration.
@@ -561,12 +614,12 @@ $$\text{Token} = \text{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident-id} \
   3. *Tier 3 (Semantic Memory):* FAISS dense vector embeddings combined with BM25 Okapi for hybrid RRF runbook retrieval.
 - **Consequences:** Eliminates database lock contention, guarantees audit compliance, and provides sub-second institutional memory retrieval.
 
-### 📜 ADR-004: Anti-Hallucination Grounding Gate & Human-in-the-Loop Remediation
+### 📜 Anti-Hallucination Grounding Gate & Human-in-the-Loop Remediation
 - **Context:** LLMs operating on production infrastructure carry severe operational risks. If an LLM hallucinates an invalid CLI command or executes an unverified database failover, it can escalate a minor degradation into company-wide downtime.
 - **Decision:** Enforce an independent Validator Agent measuring Token-Level Citation Overlap and Semantic Entailment ($\ge 95\%$ Grounding SLA). Furthermore, high-risk remediations require explicit human approval via signed HMAC-SHA256 authorization tokens.
 - **Consequences:** Zero unauthorized destructive executions, strict hallucination bounds ($\le 2.0\%$), and full compliance with enterprise SOC2 and ISO 27001 audit standards.
 
-### 📜 ADR-005: Cloud-Agnostic Adapters & Zero-Cost Offline Architecture
+### 📜 Cloud-Agnostic Adapters & Zero-Cost Offline Architecture
 - **Context:** Tying an incident platform to proprietary cloud SDKs creates vendor lock-in, incurs costly developer cloud bills, and causes flaky CI/CD test runs.
 - **Decision:** Engineer an abstract `CloudProviderFactory` pattern with pluggable interfaces for Storage, Monitoring, and Secrets, supporting native AWS, GCP, Azure, and deterministic local in-memory/filesystem providers.
 - **Consequences:** 100% code portability across multi-cloud environments, zero external cloud dependencies for local development ($0 / ₹0 spend), and instantaneous, deterministic CI test runs.
@@ -575,7 +628,7 @@ $$\text{Token} = \text{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident-id} \
 
 ## 📘 Production Standard Operating Procedures & Operational Runbooks
 
-### 📖 SOP-001: Production Incident Triage & Blast-Radius Calculation
+### 📖 Production Incident Triage & Blast-Radius Calculation
 1. **Severity Classification Matrix:**
    - **Critical (P1):** Revenue-impacting transaction stoppage ($180k/hr). Target MTTA: < 3 mins, MTTR: < 30 mins. Escalation: Incident Commander, VP Engineering, Primary Bridge.
    - **High (P2):** Core service degradation, elevated error rates ($120k/hr). Target MTTA: < 5 mins, MTTR: < 60 mins. Escalation: Service Owner, Secondary On-Call SRE.
@@ -590,7 +643,7 @@ $$\text{Token} = \text{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident-id} \
      -d '{"approval_token": "a1b2c3d4e5...", "operator_id": "sre-lead@enterprise.com"}'
    ```
 
-### 📖 SOP-002: Machine Learning Model Drift Detection & Retraining Lifecycle
+### 📖 Machine Learning Model Drift Detection & Retraining Lifecycle
 1. **Continuous Drift Monitoring:** Automated retraining triggers when any of the following statistical gates are breached:
    - **Population Stability Index (PSI):** $\text{PSI} \ge 0.20$ on any primary feature (indicates significant population drift).
    - **Kolmogorov-Smirnov (KS) Statistic:** $p\text{-value} < 0.01$ against baseline reference distributions.
@@ -602,7 +655,7 @@ $$\text{Token} = \text{HMAC-SHA256}\left(K_{\text{secret}}, \text{incident-id} \
    ```
 3. **Promotion Quality Gate:** The candidate model is verified against the champion baseline in MLflow (`Port :5000`). If Precision $\ge 0.90$, Recall $\ge 0.88$, and $p99 < 15\text{ms}$, it is automatically promoted to production champion.
 
-### 📖 SOP-003: Disaster Recovery, High Availability & Business Continuity
+### 📖 Disaster Recovery, High Availability & Business Continuity
 1. **SLA Targets:** Recovery Point Objective (**RPO < 1 minute**), Recovery Time Objective (**RTO < 15 minutes**).
 2. **State Backup Protocol:** Automated daily physical and logical backups:
    - PostgreSQL WAL archiving and automated point-in-time recovery (PITR).
